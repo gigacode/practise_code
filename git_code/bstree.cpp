@@ -2,6 +2,7 @@
 #include<list>
 #include<vector>
 #include<stack>
+#include<queue>
 
 using namespace std;
 enum State {
@@ -26,11 +27,41 @@ class graph {
         void addEdgeUndir(int idx1, int idx2);
         node* getNode(int idx);
         void displayDFS(void);
-        void printLevelWise(void);
+        void printLevelWise(int idx);
         
     private:
         vector<node*> gp;
 };
+
+void graph::printLevelWise(int idx) {
+    if(idx > gp.size())
+        return;
+
+    for(vector<node*>::iterator itr_n = gp.begin(); itr_n != gp.end(); itr_n++)
+        (*itr_n)->status = UNVISITED;
+
+    queue<node*> cur, next;
+    cur.push(gp[idx-1]);
+    while(!cur.empty())
+    {
+        node *n = cur.front();
+        cur.pop();
+        cout << "\t" << n->val;
+        for(list<node*>::iterator it = n->adj.begin(); it != n->adj.end(); it++)
+        {
+            if((*it)->status == UNVISITED) {
+                (*it)->status = VISITING;
+                next.push((*it));
+            }
+        }
+        n->status = VISITED;
+        if(cur.empty()){
+            swap(cur, next);
+            cout << "\n";
+        }
+    }
+
+}        
 
 void graph::displayDFS(void) {
    
@@ -106,8 +137,12 @@ int main(int argc, char **argv) {
     g.addEdgeUndir(3, 4);
     g.addEdgeUndir(3, 5);
     g.addEdgeUndir(4, 5);
-    
+   
+    cout << "\nDFS Traversal\n";
     g.displayDFS();
+    
+    cout << "\nLevelwise traversal starting at 4th node\n";
+    g.printLevelWise(4);
 }
     
        
